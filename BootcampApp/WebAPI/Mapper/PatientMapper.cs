@@ -3,16 +3,17 @@ using WebAPI.Models;
 
 namespace WebAPI.Mapper
 {
-    public static class DoctorMapper
+    public static class PatientMapper
     {
-        public static Doctor ToDoctor(DoctorREST dto)
+        public static Patient ToPatient(Guid doctorId, PatientREST dto)
         {
-            return new Doctor
+            return new Patient
             {
                 Id = Guid.NewGuid(),
                 Name = dto.Name,
                 Age = dto.Age,
-                Specialty = dto.Specialty,
+                Condition = dto.Condition,
+                DoctorId = doctorId,
             };
         }
     }
