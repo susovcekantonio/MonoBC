@@ -1,4 +1,4 @@
-﻿namespace WebAPI.DTO
+﻿namespace Model.DTO
 {
     public class DoctorREST
     {

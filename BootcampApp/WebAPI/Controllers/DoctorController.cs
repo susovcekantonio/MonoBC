@@ -1,10 +1,12 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using WebAPI.Models;
-using WebAPI.DTO;
-using WebAPI.Mapper;
+using Service.Mapper;
+using Service.ServiceImpl;
+using Model.Models;
+using Model.DTO;
 using Npgsql;
 using System.Numerics;
+
 
 namespace WebAPI.Controllers
 {
@@ -12,103 +14,57 @@ namespace WebAPI.Controllers
     [Route("doctor")]
     public class DoctorController : Controller
     {
-        private readonly string _connection = "Host=localhost;Port=5433;Username=postgres;Password=postgres;Database=PatientRecord";
+        private DoctorService _service = new DoctorService();
          
         [HttpPost("create")]
-        public ActionResult<Doctor> Create([FromBody]DoctorREST dto)
+        public ActionResult<Doctor> Create([FromBody]DoctorREST doctorREST)
         {
-            if (dto.Age <= 0)
+            if (doctorREST.Age <= 0)
             {
                 return BadRequest("Age cannot be lower than 0");
             }
-            Doctor doctor = DoctorMapper.ToDoctor(dto);
-            
-            using var conn = new NpgsqlConnection(_connection);
-            conn.Open();
-
-            using var cmd = new NpgsqlCommand("INSERT INTO Doctor values (@doctor_id, @doctor_name, @age, @specialty)", conn);
-            cmd.Parameters.AddWithValue("doctor_id", doctor.Id);
-            cmd.Parameters.AddWithValue("doctor_name", doctor.Name);
-            cmd.Parameters.AddWithValue("age", doctor.Age);
-            cmd.Parameters.AddWithValue("specialty", doctor.Specialty);
-
-            cmd.ExecuteNonQuery();
+            var doctor = _service.Create(doctorREST);    
 
             return Ok(doctor);
         }
 
-        [HttpPut("update/{id}")]
-        public ActionResult<Doctor> Update(Guid id, [FromBody] DoctorREST dto)
+        [HttpPut("update/{doctorId}")]
+        public ActionResult<Doctor> Update(Guid doctorId, [FromBody] DoctorREST doctorREST)
         {
-            if (dto.Age <= 0)
+            if (doctorREST.Age <= 0)
             {
                 return BadRequest("Age cannot be lower than 0");
             }
-            Doctor doctor = DoctorMapper.ToDoctor(dto);
-
-            using var conn = new NpgsqlConnection(_connection);
-            conn.Open();
-
-            using var cmd = new NpgsqlCommand("UPDATE Doctor SET doctor_name=@doctor_name, age=@age, specialty=@specialty WHERE doctor_id=@doctor_id", conn);
-            cmd.Parameters.AddWithValue("doctor_id", id);
-            cmd.Parameters.AddWithValue("doctor_name", doctor.Name);
-            cmd.Parameters.AddWithValue("age", doctor.Age);
-            cmd.Parameters.AddWithValue("specialty", doctor.Specialty);
-
-            int rowsAffected = cmd.ExecuteNonQuery();
-
-            if(rowsAffected == 0)
+            var doctor = _service.Update(doctorId, doctorREST);
+          
+            if(doctor==null)
             {
                 return NotFound("Doctor with this ID not found");
-            }           
+            }
 
             return Ok(doctor);
         }
 
-        [HttpGet("get/{id}")]
-        public ActionResult<Doctor> GetAll(Guid id)
+        [HttpGet("get/{doctorId}")]
+        public ActionResult<Doctor> Get(Guid doctorId)
         {
-            using var conn = new NpgsqlConnection(_connection);
-            conn.Open();
+            var doctor = _service.Get(doctorId);
 
-            using var cmd = new NpgsqlCommand("SELECT * FROM Doctor WHERE doctor_id=@doctor_id", conn);
-            cmd.Parameters.AddWithValue("doctor_id", id);
-
-
-            using (var rdr = cmd.ExecuteReader())
-            {
-                while (rdr.Read())
-                {
-                    var doctor = new Doctor
-                    {
-                        Id = rdr.GetGuid(0),
-                        Name = rdr.GetString(1),
-                        Age = rdr.GetInt32(2),
-                        Specialty = rdr.GetString(3)
-                    };
-                    return Ok(doctor);
-                }            
-            }
-            return NotFound("Doctor with this ID not found");
-        }
-
-        [HttpDelete("delete/{id}")]
-        public ActionResult Delete(Guid id)
-        {
-            using var conn = new NpgsqlConnection(_connection);
-            conn.Open();
-
-            using var cmd = new NpgsqlCommand("DELETE FROM Doctor WHERE doctor_id=@doctor_id", conn);
-            cmd.Parameters.AddWithValue("doctor_id", id);
-
-            int rowsAffected = cmd.ExecuteNonQuery();
-
-            if (rowsAffected == 0)
+            if (doctor == null)
             {
                 return NotFound("Doctor with this ID not found");
             }
+            return Ok(doctor);
+        }
 
-            return Ok("Doctor deleted");
+        [HttpDelete("delete/{doctorId}")]
+        public ActionResult Delete(Guid doctorId)
+        {
+            if (_service.Delete(doctorId))
+            {
+                return Ok("Doctor deleted");
+            }
+            return NotFound("Doctor with this ID not found");          
         }
 
     }
