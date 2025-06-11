@@ -14,33 +14,36 @@ namespace Service.ServiceImpl
     {
         private PatientRepository _repo = new PatientRepository();
 
-        public Patient Create(Guid doctorId, PatientREST patientREST)
+        public async Task<Patient> CreateAsync(Guid doctorId, PatientREST patientREST)
         {
             var patient = PatientMapper.ToPatient(doctorId, patientREST);
-            patient.Id = Guid.NewGuid();
-            _repo.Create(doctorId, patient);
+            await _repo.CreateAsync(doctorId, patient);
             return patient;
         }
 
-        public Patient? Update(Guid doctorId, Guid patientId, PatientREST patientREST)
+        public async Task<Patient?> UpdateAsync(Guid doctorId, Guid patientId, PatientREST patientREST)
         {
-            var patient = PatientMapper.ToPatient(doctorId, patientREST);
-            patient.Id = patientId;
-            if (_repo.Update(doctorId, patientId, patient))
+            var patient = PatientMapper.UpdatePatient(doctorId, patientId, patientREST);
+            if (await _repo.UpdateAsync(doctorId, patientId, patient))
             {
                 return patient;
             }
             return null;
         }
 
-        public Doctor? GetAllPatients(Guid doctorId)
+        public async Task<Doctor?> GetAllPatientsAsync(Guid doctorId)
         {
-            return _repo.GetAllPatients(doctorId);
+            return await _repo.GetAllPatientsAsync(doctorId);
         }
 
-        public bool Delete(Guid patientId)
+        public async Task<Doctor?> GetDoctorWithPatientsPaginatedAsync(Guid doctorId, int page, int pageSize)
         {
-            return _repo.Delete(patientId);
+            return await _repo.GetDoctorWithPatientsPaginatedAsync(doctorId, page, pageSize);
+        }
+
+        public async Task<bool> DeleteAsync(Guid patientId)
+        {
+            return await _repo.DeleteAsync(patientId);
         }
     }
 }

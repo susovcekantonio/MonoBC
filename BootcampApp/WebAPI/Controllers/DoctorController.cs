@@ -17,25 +17,25 @@ namespace WebAPI.Controllers
         private DoctorService _service = new DoctorService();
          
         [HttpPost("create")]
-        public ActionResult<Doctor> Create([FromBody]DoctorREST doctorREST)
+        public async Task<ActionResult<Doctor>> CreateAsync([FromBody]DoctorREST doctorREST)
         {
             if (doctorREST.Age <= 0)
             {
                 return BadRequest("Age cannot be lower than 0");
             }
-            var doctor = _service.Create(doctorREST);    
+            var doctor = await _service.CreateAsync(doctorREST);    
 
             return Ok(doctor);
         }
 
         [HttpPut("update/{doctorId}")]
-        public ActionResult<Doctor> Update(Guid doctorId, [FromBody] DoctorREST doctorREST)
+        public async Task<ActionResult<Doctor>> UpdateAsync(Guid doctorId, [FromBody] DoctorREST doctorREST)
         {
             if (doctorREST.Age <= 0)
             {
                 return BadRequest("Age cannot be lower than 0");
             }
-            var doctor = _service.Update(doctorId, doctorREST);
+            var doctor = await _service.UpdateAsync(doctorId, doctorREST);
           
             if(doctor==null)
             {
@@ -46,9 +46,9 @@ namespace WebAPI.Controllers
         }
 
         [HttpGet("get/{doctorId}")]
-        public ActionResult<Doctor> Get(Guid doctorId)
+        public async Task<ActionResult<Doctor>> GetAsync(Guid doctorId)
         {
-            var doctor = _service.Get(doctorId);
+            var doctor = await _service.GetAsync(doctorId);
 
             if (doctor == null)
             {
@@ -58,9 +58,9 @@ namespace WebAPI.Controllers
         }
 
         [HttpDelete("delete/{doctorId}")]
-        public ActionResult Delete(Guid doctorId)
+        public async Task<ActionResult> DeleteAsync(Guid doctorId)
         {
-            if (_service.Delete(doctorId))
+            if (await _service.DeleteAsync(doctorId))
             {
                 return Ok("Doctor deleted");
             }

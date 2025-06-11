@@ -16,5 +16,17 @@ namespace Service.Mapper
                 DoctorId = doctorId,
             };
         }
+
+        public static Patient UpdatePatient(Guid doctorId, Guid patientId, PatientREST patientREST)
+        {
+            return new Patient
+            {
+                Id = patientId,
+                Name = patientREST.Name,
+                Age = patientREST.Age,
+                Condition = patientREST.Condition,
+                DoctorId = doctorId,
+            };
+        }
     }
 }

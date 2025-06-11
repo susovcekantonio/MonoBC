@@ -13,47 +13,49 @@ namespace Repository
     {
         private readonly string _connection = "Host=localhost;Port=5433;Username=postgres;Password=postgres;Database=PatientRecord";
 
-        public void Create(Doctor doctor)
+        public async Task CreateAsync(Doctor doctor)
         {
-            using var conn = new NpgsqlConnection(_connection);
+            await using var conn = new NpgsqlConnection(_connection);
             conn.Open();
 
-            using var cmd = new NpgsqlCommand("INSERT INTO Doctor values (@doctor_id, @doctor_name, @age, @specialty)", conn);
+            await using var cmd = new NpgsqlCommand("INSERT INTO Doctor values (@doctor_id, @doctor_name, @age, @specialty)", conn);
             cmd.Parameters.AddWithValue("doctor_id", doctor.Id);
             cmd.Parameters.AddWithValue("doctor_name", doctor.Name);
             cmd.Parameters.AddWithValue("age", doctor.Age);
             cmd.Parameters.AddWithValue("specialty", doctor.Specialty);
 
-            cmd.ExecuteNonQuery();
+            await cmd.ExecuteNonQueryAsync();
         }
 
-        public bool Update(Guid doctorId, Doctor doctor)
+        public async Task<bool> UpdateAsync(Guid doctorId, Doctor doctor)
         {
-            using var conn = new NpgsqlConnection(_connection);
+            await using var conn = new NpgsqlConnection(_connection);
             conn.Open();
 
 
-            using var cmd = new NpgsqlCommand("UPDATE Doctor SET doctor_name=@doctor_name, age=@age, specialty=@specialty WHERE doctor_id=@doctor_id", conn);
+            await using var cmd = new NpgsqlCommand("UPDATE Doctor " +
+                                                    "SET doctor_name=@doctor_name, age=@age, specialty=@specialty " +
+                                                    "WHERE doctor_id=@doctor_id", conn);
             cmd.Parameters.AddWithValue("doctor_id", doctorId);
             cmd.Parameters.AddWithValue("doctor_name", doctor.Name);
             cmd.Parameters.AddWithValue("age", doctor.Age);
             cmd.Parameters.AddWithValue("specialty", doctor.Specialty);
 
-            int rowsAffected = cmd.ExecuteNonQuery();
+            int rowsAffected = await cmd.ExecuteNonQueryAsync();
 
             return rowsAffected > 0;
         }
 
-        public Doctor? Get(Guid doctorId)
+        public async Task<Doctor?> GetAsync(Guid doctorId)
         {
-            using var conn = new NpgsqlConnection(_connection);
+            await using var conn = new NpgsqlConnection(_connection);
             conn.Open();
 
-            using var cmd = new NpgsqlCommand("SELECT * FROM Doctor WHERE doctor_id=@doctor_id", conn);
+            await using var cmd = new NpgsqlCommand("SELECT * FROM Doctor WHERE doctor_id=@doctor_id", conn);
             cmd.Parameters.AddWithValue("doctor_id", doctorId);
 
 
-            using (var rdr = cmd.ExecuteReader())
+            await using (var rdr = await cmd.ExecuteReaderAsync())
             {
                 while (rdr.Read())
                 {
@@ -70,15 +72,15 @@ namespace Repository
             }
         }
 
-        public bool Delete(Guid doctorId)
+        public async Task<bool> DeleteAsync(Guid doctorId)
         {
-            using var conn = new NpgsqlConnection(_connection);
+            await using var conn = new NpgsqlConnection(_connection);
             conn.Open();
 
-            using var cmd = new NpgsqlCommand("DELETE FROM Doctor WHERE doctor_id=@doctor_id", conn);
+            await using var cmd = new NpgsqlCommand("DELETE FROM Doctor WHERE doctor_id=@doctor_id", conn);
             cmd.Parameters.AddWithValue("doctor_id", doctorId);
 
-            int rowsAffected = cmd.ExecuteNonQuery();
+            int rowsAffected = await cmd.ExecuteNonQueryAsync();
 
             return rowsAffected > 0;
         }

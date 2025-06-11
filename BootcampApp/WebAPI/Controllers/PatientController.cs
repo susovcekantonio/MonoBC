@@ -14,24 +14,24 @@ namespace WebAPI.Controllers
         private PatientService _service = new PatientService();
 
         [HttpPost("create")]
-        public ActionResult<Patient> Create(Guid doctorId, [FromBody] PatientREST patientREST)
+        public async Task<ActionResult<Patient>> CreateAsync(Guid doctorId, [FromBody] PatientREST patientREST)
         {
             if (patientREST.Age <= 0)
             {
                 return BadRequest("Age cannot be lower than 0");
             }
-            var patient = _service.Create(doctorId, patientREST);
+            var patient = await _service.CreateAsync(doctorId, patientREST);
             return Ok(patient);
         }
 
         [HttpPut("update/{patientId}")]
-        public ActionResult<Doctor> Update(Guid doctorId, Guid patientId, [FromBody] PatientREST patientREST)
+        public async Task<ActionResult<Doctor>> UpdateAsync(Guid doctorId, Guid patientId, [FromBody] PatientREST patientREST)
         {
             if (patientREST.Age <= 0)
             {
                 return BadRequest("Age cannot be lower than 0");
             }
-            var patient = _service.Update(doctorId, patientId, patientREST);
+            var patient = await _service.UpdateAsync(doctorId, patientId, patientREST);
 
             if (patient == null)
             {
@@ -42,15 +42,21 @@ namespace WebAPI.Controllers
         }
 
         [HttpGet("get-patients")]
-        public ActionResult<Doctor> GetAllPatients(Guid doctorId)
+        public async Task<ActionResult<Doctor>> GetAllPatientsAsync(Guid doctorId)
         {
-            return _service.GetAllPatients(doctorId);
+            return await _service.GetAllPatientsAsync(doctorId);
+        }
+
+        [HttpGet("get-paginated-patients")]
+        public async Task<ActionResult<Doctor>> GetDoctorWithPatientsPaginatedAsync(Guid doctorId, int page, int pageSize )
+        {
+            return await _service.GetDoctorWithPatientsPaginatedAsync(doctorId, page, pageSize);
         }
 
         [HttpDelete("delete/{patientId}")]
-        public ActionResult Delete(Guid patientId)
+        public async Task<ActionResult> DeleteAsync(Guid patientId)
         {
-            if (_service.Delete(patientId))
+            if (await _service.DeleteAsync(patientId))
             {
                 return Ok("Patient deleted");
             }
