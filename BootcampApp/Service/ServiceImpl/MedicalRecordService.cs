@@ -1,6 +1,8 @@
 ﻿using Model.DTO;
 using Model.Models;
 using Repository;
+using Repository.Interface;
+using Service.Interface;
 using Service.Mapper;
 using System;
 using System.Collections.Generic;
@@ -10,9 +12,14 @@ using System.Threading.Tasks;
 
 namespace Service.ServiceImpl
 {
-    public class MedicalRecordService
+    public class MedicalRecordService : IMedicalRecordService
     {
-        private MedicalRecordRepository _repo = new MedicalRecordRepository();
+        private readonly IMedicalRecordRepository _repo;
+
+        public MedicalRecordService(IMedicalRecordRepository repo)
+        {
+            this._repo = repo;
+        }
 
         public async Task<MedicalRecord> CreateAsync(Guid patientId, MedicalRecordREST medicalRecordREST)
         {

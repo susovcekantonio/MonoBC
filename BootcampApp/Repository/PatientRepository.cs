@@ -7,10 +7,11 @@ using Model.Models;
 using Model.DTO;
 using Npgsql;
 using System.Xml.Linq;
+using Repository.Interface;
 
 namespace Repository
 {
-    public class PatientRepository
+    public class PatientRepository : IPatientRepository
     {
         private readonly string _connection = "Host=localhost;Port=5433;Username=postgres;Password=postgres;Database=PatientRecord";
 
@@ -69,7 +70,7 @@ namespace Repository
             {
                 while (rdr.Read())
                 {
-                    if(doctor.Id!=doctorId)
+                    if (doctor.Id != doctorId)
                     {
                         doctor.Id = doctorId;
                         doctor.Name = rdr.GetString(1);
@@ -90,7 +91,7 @@ namespace Repository
             }
         }
 
-        public async Task<Doctor?> GetDoctorWithPatientsPaginatedAsync(Guid doctorId, int page, int pageSize)
+        public async Task<Doctor?> GetDoctorWithPatientsPaginatedAsync(Guid doctorId, int page, int pageSize, string sort)
         {
             var doctor = new Doctor();
             var patients = new List<Patient>();
@@ -100,10 +101,6 @@ namespace Repository
             await using var conn = new NpgsqlConnection(_connection);
             await conn.OpenAsync();
 
-            var countCmd = new NpgsqlCommand("SELECT COUNT(*) FROM Patient WHERE doctor_id = @doctor_id", conn);
-            countCmd.Parameters.AddWithValue("doctor_id", doctorId);
-            int totalCount = Convert.ToInt32(await countCmd.ExecuteScalarAsync());
-
             var cmd = new NpgsqlCommand("SELECT d.doctor_id, d.doctor_name, d.age, d.specialty, " +
                                         "p.patient_id, p.patient_name, p.age, p.condition, " +
                                         "r.record_id, r.treatment, r.patient_id " +
@@ -111,7 +108,7 @@ namespace Repository
                                         "INNER JOIN Patient p ON d.doctor_id = p.doctor_id " +
                                         "LEFT JOIN medical_record r ON p.patient_id = r.patient_id " +
                                         "WHERE d.doctor_id = @doctor_id " +
-                                        "ORDER BY p.patient_name " +
+                                        $"ORDER BY p.{sort} " +
                                         "LIMIT @limit OFFSET @offset ", conn);
 
             cmd.Parameters.AddWithValue("doctor_id", doctorId);
@@ -150,9 +147,6 @@ namespace Repository
             doctor.Patients = patients;
             return doctor;
         }
-
-
-
 
         public async Task<bool> DeleteAsync(Guid patientId)
         {

@@ -6,6 +6,7 @@ using Model.Models;
 using Model.DTO;
 using Npgsql;
 using System.Numerics;
+using Service.Interface;
 
 
 namespace WebAPI.Controllers
@@ -14,7 +15,12 @@ namespace WebAPI.Controllers
     [Route("doctor")]
     public class DoctorController : Controller
     {
-        private DoctorService _service = new DoctorService();
+        private readonly IDoctorService _service;
+
+        public DoctorController(IDoctorService service)
+        {
+            this._service = service;
+        }
          
         [HttpPost("create")]
         public async Task<ActionResult<Doctor>> CreateAsync([FromBody]DoctorREST doctorREST)

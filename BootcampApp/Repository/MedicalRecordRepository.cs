@@ -5,10 +5,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Repository.Interface;
 
 namespace Repository
 {
-    public class MedicalRecordRepository
+    public class MedicalRecordRepository : IMedicalRecordRepository
     {
         private readonly string _connection = "Host=localhost;Port=5433;Username=postgres;Password=postgres;Database=PatientRecord";
 

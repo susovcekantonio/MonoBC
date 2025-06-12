@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Model.DTO;
 using Model.Models;
+using Service.Interface;
 using Service.ServiceImpl;
 
 namespace WebAPI.Controllers
@@ -9,7 +10,12 @@ namespace WebAPI.Controllers
     [Route("patient/{patientId}/record")]
     public class MedicalRecordController : Controller
     {
-        private MedicalRecordService _service = new MedicalRecordService();
+        private readonly IMedicalRecordService _service;
+
+        public MedicalRecordController(IMedicalRecordService service)
+        {
+            this._service = service;
+        }
 
         [HttpPost("create")]
         public async Task<ActionResult<MedicalRecord>> CreateAsync(Guid patientId, [FromBody] MedicalRecordREST medicalRecordREST)

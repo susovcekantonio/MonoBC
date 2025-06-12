@@ -1,5 +1,6 @@
 ﻿using Model.Models;
 using Npgsql;
+using Repository.Interface;
 using System;
 using System.Collections.Generic;
 using System.Data.Common;
@@ -9,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace Repository
 {
-    public class DoctorRepository
+    public class DoctorRepository : IDoctorRepository
     {
         private readonly string _connection = "Host=localhost;Port=5433;Username=postgres;Password=postgres;Database=PatientRecord";
 

@@ -7,13 +7,21 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Service.Interface;
+using Repository.Interface;
 
 namespace Service.ServiceImpl
 {
-    public class DoctorService
+    public class DoctorService : IDoctorService
     {
-        private DoctorRepository _repo = new DoctorRepository();
-        public async Task<Doctor> CreateAsync(DoctorREST doctorREST) 
+        private readonly IDoctorRepository _repo;
+
+        public DoctorService(IDoctorRepository repo)
+        {
+            this._repo = repo;
+        }
+
+        public async Task<Doctor> CreateAsync(DoctorREST doctorREST)
         {
             var doctor = DoctorMapper.ToDoctor(doctorREST);
             await _repo.CreateAsync(doctor);
@@ -24,7 +32,7 @@ namespace Service.ServiceImpl
         public async Task<Doctor?> UpdateAsync(Guid doctorId, DoctorREST doctorREST)
         {
             var doctor = DoctorMapper.UpdateDoctor(doctorId, doctorREST);
-            if(await _repo.UpdateAsync(doctorId, doctor))
+            if (await _repo.UpdateAsync(doctorId, doctor))
             {
                 return doctor;
             }

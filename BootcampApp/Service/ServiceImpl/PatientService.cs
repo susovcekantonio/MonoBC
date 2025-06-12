@@ -1,6 +1,8 @@
 ﻿using Model.DTO;
 using Model.Models;
 using Repository;
+using Repository.Interface;
+using Service.Interface;
 using Service.Mapper;
 using System;
 using System.Collections.Generic;
@@ -10,9 +12,14 @@ using System.Threading.Tasks;
 
 namespace Service.ServiceImpl
 {
-    public class PatientService
+    public class PatientService : IPatientService
     {
-        private PatientRepository _repo = new PatientRepository();
+        private readonly IPatientRepository _repo;
+
+        public PatientService(IPatientRepository repo)
+        {
+            this._repo = repo;
+        }
 
         public async Task<Patient> CreateAsync(Guid doctorId, PatientREST patientREST)
         {
@@ -36,9 +43,9 @@ namespace Service.ServiceImpl
             return await _repo.GetAllPatientsAsync(doctorId);
         }
 
-        public async Task<Doctor?> GetDoctorWithPatientsPaginatedAsync(Guid doctorId, int page, int pageSize)
+        public async Task<Doctor?> GetDoctorWithPatientsPaginatedAsync(Guid doctorId, int page, int pageSize, string sort)
         {
-            return await _repo.GetDoctorWithPatientsPaginatedAsync(doctorId, page, pageSize);
+            return await _repo.GetDoctorWithPatientsPaginatedAsync(doctorId, page, pageSize, sort);
         }
 
         public async Task<bool> DeleteAsync(Guid patientId)
