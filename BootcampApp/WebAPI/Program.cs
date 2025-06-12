@@ -6,54 +6,27 @@ using Autofac;
 using WebAPI.Controllers;
 using Autofac.Extensions.DependencyInjection;
 
-//var builder = WebApplication.CreateBuilder(args);
 
-//// Add services to the container.
+var builder = WebApplication.CreateBuilder(args);
 
-//builder.Services.AddControllers();
-//// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-//builder.Services.AddEndpointsApiExplorer();
-//builder.Services.AddSwaggerGen();
+builder.Host.UseServiceProviderFactory(new AutofacServiceProviderFactory());
 
-//builder.Services.AddScoped<IDoctorRepository, DoctorRepository>();
-//builder.Services.AddScoped<IPatientRepository, PatientRepository>();
-//builder.Services.AddScoped<IMedicalRecordRepository, MedicalRecordRepository>();
+builder.Services.AddControllers();
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
 
-//builder.Services.AddScoped<IDoctorService, DoctorService>();
-//builder.Services.AddScoped<IPatientService, PatientService>();
-//builder.Services.AddScoped<IMedicalRecordService, MedicalRecordService>();
+builder.Host.ConfigureContainer<ContainerBuilder>(containerBuilder =>
+{
+    containerBuilder.RegisterType<DoctorRepository>().As<IDoctorRepository>().InstancePerRequest();
+    containerBuilder.RegisterType<PatientRepository>().As<IPatientRepository>().InstancePerRequest();
+    containerBuilder.RegisterType<MedicalRecordRepository>().As<IMedicalRecordRepository>().InstancePerRequest();
 
-//var app = builder.Build();
+    containerBuilder.RegisterType<DoctorService>().As<IDoctorService>().InstancePerRequest();
+    containerBuilder.RegisterType<PatientService>().As<IPatientService>().InstancePerRequest();
+    containerBuilder.RegisterType<MedicalRecordService>().As<IMedicalRecordService>().InstancePerRequest();
+});
 
-
-//// Configure the HTTP request pipeline.
-//if (app.Environment.IsDevelopment())
-//{
-//    app.UseSwagger();
-//    app.UseSwaggerUI();
-//}
-
-//app.UseHttpsRedirection();
-
-//app.UseAuthorization();
-
-//app.MapControllers();
-
-//app.Run();
-
-
-
-var containerBuilder = new ContainerBuilder();
-
-    containerBuilder.RegisterType<DoctorRepository>().As<IDoctorRepository>();
-    containerBuilder.RegisterType<PatientRepository>().As<IPatientRepository>();
-    containerBuilder.RegisterType<MedicalRecordRepository>().As<IMedicalRecordRepository>();
-
-    containerBuilder.RegisterType<DoctorService>().As<IDoctorService>();
-    containerBuilder.RegisterType<PatientService>().As<IPatientService>();
-    containerBuilder.RegisterType<MedicalRecordService>().As<IMedicalRecordService>();
-
-var app = containerBuilder.Build();
+var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
 {
@@ -68,11 +41,3 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.Run();
-
-
-//var builder = new ContainerBuilder();
-//builder.RegisterType<DoctorService>().As<IDoctorService>();
-//builder.RegisterType<DoctorRepository>().As<IDoctorRepository>();
-//builder.RegisterType<DoctorController>();
-
-//var app = builder.Build();
