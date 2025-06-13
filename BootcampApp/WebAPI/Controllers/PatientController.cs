@@ -4,8 +4,8 @@ using Model.Models;
 using Service.Mapper;
 using Model.DTO;
 using Service.ServiceImpl;
-using Repository.Interface;
-using Service.Interface;
+using Repository.Common;
+using Service.Common;
 
 namespace WebAPI.Controllers
 {
@@ -49,15 +49,15 @@ namespace WebAPI.Controllers
         }
 
         [HttpGet("get-patients")]
-        public async Task<ActionResult<Doctor>> GetAllPatientsAsync(Guid doctorId)
+        public async Task<ActionResult<Doctor?>> GetAllPatientsAsync(Guid doctorId)
         {
             return await _service.GetAllPatientsAsync(doctorId);
         }
 
         [HttpGet("get-paginated-patients")]
-        public async Task<ActionResult<Doctor>> GetDoctorWithPatientsPaginatedAsync(Guid doctorId, int page, int pageSize, string sort )
+        public async Task<ActionResult<Doctor?>> GetDoctorWithPatientsPaginatedAsync(Guid doctorId,int page = 1, int pageSize = 3, string sort = "patient_name", string order = "desc")
         {
-            return await _service.GetDoctorWithPatientsPaginatedAsync(doctorId, page, pageSize, sort);
+            return await _service.GetDoctorWithPatientsPaginatedAsync(doctorId, page, pageSize, sort, order);
         }
 
         [HttpDelete("delete/{patientId}")]

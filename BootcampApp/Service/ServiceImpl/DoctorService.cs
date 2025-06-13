@@ -7,8 +7,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Service.Interface;
-using Repository.Interface;
+using Repository.Common;
+using Service.Common;
 
 namespace Service.ServiceImpl
 {

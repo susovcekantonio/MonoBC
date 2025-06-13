@@ -1,8 +1,8 @@
 ﻿using Model.DTO;
 using Model.Models;
 using Repository;
-using Repository.Interface;
-using Service.Interface;
+using Repository.Common;
+using Service.Common;
 using Service.Mapper;
 using System;
 using System.Collections.Generic;
@@ -43,9 +43,9 @@ namespace Service.ServiceImpl
             return await _repo.GetAllPatientsAsync(doctorId);
         }
 
-        public async Task<Doctor?> GetDoctorWithPatientsPaginatedAsync(Guid doctorId, int page, int pageSize, string sort)
+        public async Task<Doctor?> GetDoctorWithPatientsPaginatedAsync(Guid doctorId, int page, int pageSize, string sort, string order)
         {
-            return await _repo.GetDoctorWithPatientsPaginatedAsync(doctorId, page, pageSize, sort);
+            return await _repo.GetDoctorWithPatientsPaginatedAsync(doctorId, page, pageSize, sort, order);
         }
 
         public async Task<bool> DeleteAsync(Guid patientId)

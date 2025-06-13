@@ -1,7 +1,7 @@
 ﻿using Model.DTO;
 using Model.Models;
 
-namespace Service.Interface
+namespace Service.Common
 {
     public interface IMedicalRecordService
     {

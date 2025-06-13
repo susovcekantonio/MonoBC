@@ -7,7 +7,7 @@ using Model.Models;
 using Model.DTO;
 using Npgsql;
 using System.Xml.Linq;
-using Repository.Interface;
+using Repository.Common;
 
 namespace Repository
 {
@@ -91,7 +91,7 @@ namespace Repository
             }
         }
 
-        public async Task<Doctor?> GetDoctorWithPatientsPaginatedAsync(Guid doctorId, int page, int pageSize, string sort)
+        public async Task<Doctor?> GetDoctorWithPatientsPaginatedAsync(Guid doctorId, int page, int pageSize, string sort, string order)
         {
             var doctor = new Doctor();
             var patients = new List<Patient>();
@@ -101,6 +101,10 @@ namespace Repository
             await using var conn = new NpgsqlConnection(_connection);
             await conn.OpenAsync();
 
+            var countCmd = new NpgsqlCommand("SELECT COUNT(*) FROM patient WHERE doctor_id = @doctor_id", conn);
+            countCmd.Parameters.AddWithValue("doctor_id", doctorId);
+            int count = Convert.ToInt32(await countCmd.ExecuteScalarAsync());
+
             var cmd = new NpgsqlCommand("SELECT d.doctor_id, d.doctor_name, d.age, d.specialty, " +
                                         "p.patient_id, p.patient_name, p.age, p.condition, " +
                                         "r.record_id, r.treatment, r.patient_id " +
@@ -108,12 +112,13 @@ namespace Repository
                                         "INNER JOIN Patient p ON d.doctor_id = p.doctor_id " +
                                         "LEFT JOIN medical_record r ON p.patient_id = r.patient_id " +
                                         "WHERE d.doctor_id = @doctor_id " +
-                                        $"ORDER BY p.{sort} " +
+                                        $"ORDER BY p.{sort} {order} " +
                                         "LIMIT @limit OFFSET @offset ", conn);
 
             cmd.Parameters.AddWithValue("doctor_id", doctorId);
             cmd.Parameters.AddWithValue("limit", pageSize);
             cmd.Parameters.AddWithValue("offset", offset);
+
 
             await using var rdr = await cmd.ExecuteReaderAsync();
 

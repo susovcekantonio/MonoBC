@@ -1,6 +1,6 @@
-using Repository.Interface;
+using Repository.Common;
 using Repository;
-using Service.Interface;
+using Service.Common;
 using Service.ServiceImpl;
 using Autofac;
 using WebAPI.Controllers;
@@ -17,13 +17,13 @@ builder.Services.AddSwaggerGen();
 
 builder.Host.ConfigureContainer<ContainerBuilder>(containerBuilder =>
 {
-    containerBuilder.RegisterType<DoctorRepository>().As<IDoctorRepository>().InstancePerRequest();
-    containerBuilder.RegisterType<PatientRepository>().As<IPatientRepository>().InstancePerRequest();
-    containerBuilder.RegisterType<MedicalRecordRepository>().As<IMedicalRecordRepository>().InstancePerRequest();
+    containerBuilder.RegisterType<DoctorRepository>().As<IDoctorRepository>().InstancePerLifetimeScope();
+    containerBuilder.RegisterType<PatientRepository>().As<IPatientRepository>().InstancePerLifetimeScope();
+    containerBuilder.RegisterType<MedicalRecordRepository>().As<IMedicalRecordRepository>().InstancePerLifetimeScope();
 
-    containerBuilder.RegisterType<DoctorService>().As<IDoctorService>().InstancePerRequest();
-    containerBuilder.RegisterType<PatientService>().As<IPatientService>().InstancePerRequest();
-    containerBuilder.RegisterType<MedicalRecordService>().As<IMedicalRecordService>().InstancePerRequest();
+    containerBuilder.RegisterType<DoctorService>().As<IDoctorService>().InstancePerLifetimeScope();
+    containerBuilder.RegisterType<PatientService>().As<IPatientService>().InstancePerLifetimeScope();
+    containerBuilder.RegisterType<MedicalRecordService>().As<IMedicalRecordService>().InstancePerLifetimeScope();
 });
 
 var app = builder.Build();

@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Model.DTO;
 using Model.Models;
-using Service.Interface;
+using Service.Common;
 using Service.ServiceImpl;
 
 namespace WebAPI.Controllers

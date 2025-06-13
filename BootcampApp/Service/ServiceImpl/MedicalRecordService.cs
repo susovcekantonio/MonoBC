@@ -1,8 +1,8 @@
 ﻿using Model.DTO;
 using Model.Models;
 using Repository;
-using Repository.Interface;
-using Service.Interface;
+using Repository.Common;
+using Service.Common;
 using Service.Mapper;
 using System;
 using System.Collections.Generic;

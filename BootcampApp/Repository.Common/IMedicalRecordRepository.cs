@@ -1,6 +1,6 @@
 ﻿using Model.Models;
 
-namespace Repository.Interface
+namespace Repository.Common
 {
     public interface IMedicalRecordRepository
     {

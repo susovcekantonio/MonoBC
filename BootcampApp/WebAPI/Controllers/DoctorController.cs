@@ -6,7 +6,7 @@ using Model.Models;
 using Model.DTO;
 using Npgsql;
 using System.Numerics;
-using Service.Interface;
+using Service.Common;
 
 
 namespace WebAPI.Controllers
